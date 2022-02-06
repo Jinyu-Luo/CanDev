@@ -29,7 +29,7 @@ clean_gender <- clean %>%
 
 gender_retention <- clean_gender %>% 
   filter(question == "Q53") %>%
-  group_by(dept_e, gender, answer1, answer2, answer3,anscount, surveyr) %>%
+  group_by(dept_e, gender, answer1, answer2, answer3,anscount) %>%
   rename(c(Yes = answer1, No = answer2, Notsure = answer3))%>%
   summarize()
 
