@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[35]:
+# In[1]:
 
 
 from sklearn.ensemble import RandomForestRegressor
@@ -12,13 +12,13 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 
-# In[ ]:
+# In[2]:
 
 
 ## Investigate the subgroup: Chinese
 
 
-# In[59]:
+# In[3]:
 
 
 features = pd.read_csv('Chinese2.csv')
@@ -32,20 +32,20 @@ features = features[['Harassment', 'Ethical.workplace',
                 'Duty.to.accommodate', 'yes']]
 
 
-# In[60]:
+# In[4]:
 
 
 features = pd.get_dummies(features)
 
 
-# In[61]:
+# In[5]:
 
 
 # Labels are the values we want to predict
 labels = np.array(features['yes'])
 
 
-# In[62]:
+# In[6]:
 
 
 features= features.drop('yes', axis = 1)
@@ -54,19 +54,19 @@ feature_list = list(features.columns)
 features = np.array(features)
 
 
-# In[63]:
+# In[7]:
 
 
 print(feature_list)
 
 
-# In[64]:
+# In[8]:
 
 
 train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
 
 
-# In[65]:
+# In[9]:
 
 
 print('Training Features Shape:', train_features.shape)
@@ -75,7 +75,7 @@ print('Testing Features Shape:', test_features.shape)
 print('Testing Labels Shape:', test_labels.shape)
 
 
-# In[66]:
+# In[10]:
 
 
 rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
@@ -83,7 +83,7 @@ rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
 rf.fit(train_features, train_labels)
 
 
-# In[67]:
+# In[11]:
 
 
 predictions = rf.predict(test_features)
@@ -93,7 +93,7 @@ errors = abs(predictions - test_labels)
 print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
 
 
-# In[68]:
+# In[12]:
 
 
 mape = 100 * (errors / test_labels)
@@ -102,7 +102,7 @@ accuracy = 100 - np.mean(mape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[69]:
+# In[13]:
 
 
 importances = list(rf.feature_importances_)
@@ -113,19 +113,37 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 # Print out the feature and importances 
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
+# New random forest with only the two most important variables
+rf_most_important = RandomForestRegressor(n_estimators= 1000, random_state=20)
+important_indices = [feature_list.index('Harassment'), feature_list.index('Ethical.workplace'),feature_list.index('Senior.management'), feature_list.index('A.safe.and.healthy.workplace'),  feature_list.index('Duty.to.accommodate')]
+train_important = train_features[:, important_indices]
+test_important = test_features[:, important_indices]
+# Train the random forest
+rf_most_important.fit(train_important, train_labels)
+# Make predictions 
+predictions = rf_most_important.predict(test_important)
+errors = abs(predictions - test_labels)
+mape = np.mean(100 * (errors / test_labels))
+accuracy = 100 - mape
+print('Accuracy:', round(accuracy, 2), '%.')
 
-# In[70]:
-
+importances_import = list(rf_most_important.feature_importances_)
+feature_list_import = ['Harassment', 'Ethical.workplace',
+                     'Senior.management','A.safe.and.healthy.workplace', 
+                'Duty.to.accommodate']
 
 plt.style.use('fivethirtyeight')
-# list of x locations for plotting
-x_values = list(range(len(importances)))
-# Make a bar chart
-plt.bar(x_values, importances, orientation = 'vertical')
-# Tick labels for x axis
-plt.xticks(x_values, feature_list, rotation='vertical')
-# Axis labels and title
-plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
+x_values = list(range(len(feature_list_import)))
+plt.barh( x_values, importances_import, align = 'center')
+plt.yticks(x_values, labels = feature_list_import)
+
+
+
+
+plt.title('Variable Importances For Chinese')
+plt.ylabel('Variable')
+plt.xlabel('Importance')
+plt.show()
 
 
 # In[ ]:
@@ -134,7 +152,7 @@ plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importance
 ## Investigate the subgroup: Black
 
 
-# In[ ]:
+# In[14]:
 
 
 features = pd.read_csv('Black2.csv')
@@ -150,19 +168,19 @@ features = features[['Use.of.official.languages', 'Duty.to.accommodate',
                 'Work.related.stress', 'yes']]
 
 
-# In[ ]:
+# In[15]:
 
 
 features = pd.get_dummies(features)
 
 
-# In[ ]:
+# In[16]:
 
 
 labels = np.array(features['yes'])
 
 
-# In[ ]:
+# In[17]:
 
 
 features= features.drop('yes', axis = 1)
@@ -173,14 +191,14 @@ features = np.array(features)
 train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
 
 
-# In[ ]:
+# In[18]:
 
 
 rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
 rf.fit(train_features, train_labels)
 
 
-# In[ ]:
+# In[19]:
 
 
 predictions = rf.predict(test_features)
@@ -190,7 +208,7 @@ errors = abs(predictions - test_labels)
 print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
 
 
-# In[ ]:
+# In[20]:
 
 
 mape = 100 * (errors / test_labels)
@@ -199,7 +217,7 @@ accuracy = 100 - np.mean(mape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[ ]:
+# In[21]:
 
 
 importances = list(rf.feature_importances_)
@@ -210,19 +228,37 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 # Print out the feature and importances 
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
+# New random forest with only the two most important variables
+rf_most_important = RandomForestRegressor(n_estimators= 1000, random_state=20)
+important_indices = [feature_list.index('Use.of.official.languages'), feature_list.index('Duty.to.accommodate'),feature_list.index('Performance.management'), feature_list.index('Work.life.balance.and.workload'),  feature_list.index('Work.related.stress')]
+train_important = train_features[:, important_indices]
+test_important = test_features[:, important_indices]
+# Train the random forest
+rf_most_important.fit(train_important, train_labels)
+# Make predictions 
+predictions = rf_most_important.predict(test_important)
+errors = abs(predictions - test_labels)
+mape = np.mean(100 * (errors / test_labels))
+accuracy = 100 - mape
+print('Accuracy:', round(accuracy, 2), '%.')
 
-# In[ ]:
-
+importances_import = list(rf_most_important.feature_importances_)
+feature_list_import = ['Use.of.official.languages', 'Duty.to.accommodate',
+                     'Performance.management','Work.life.balance.and.workload', 
+                'Work.related.stress']
 
 plt.style.use('fivethirtyeight')
-# list of x locations for plotting
-x_values = list(range(len(importances)))
-# Make a bar chart
-plt.bar(x_values, importances, orientation = 'vertical')
-# Tick labels for x axis
-plt.xticks(x_values, feature_list, rotation='vertical')
-# Axis labels and title
-plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
+x_values = list(range(len(feature_list_import)))
+plt.barh( x_values, importances_import, align = 'center')
+plt.yticks(x_values, labels = feature_list_import)
+
+
+
+
+plt.title('Variable Importances For Black')
+plt.ylabel('Variable')
+plt.xlabel('Importance')
+plt.show()
 
 
 # In[ ]:
@@ -231,7 +267,7 @@ plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importance
 ## Investigate the subgroup: Indigenous
 
 
-# In[ ]:
+# In[39]:
 
 
 features = pd.read_csv('indigenous2020.csv')
@@ -245,19 +281,19 @@ features = features[['Organizational performance', 'Pay or other compensation is
                    'A psychologically healthy workplace', 'Yes']]
 
 
-# In[ ]:
+# In[40]:
 
 
 features = pd.get_dummies(features)
 
 
-# In[ ]:
+# In[41]:
 
 
 labels = np.array(features['Yes'])
 
 
-# In[ ]:
+# In[42]:
 
 
 features= features.drop('Yes', axis = 1)
@@ -266,13 +302,13 @@ feature_list = list(features.columns)
 features = np.array(features)
 
 
-# In[ ]:
+# In[43]:
 
 
 train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
 
 
-# In[ ]:
+# In[44]:
 
 
 rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
@@ -280,7 +316,7 @@ rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
 rf.fit(train_features, train_labels)
 
 
-# In[ ]:
+# In[45]:
 
 
 predictions = rf.predict(test_features)
@@ -290,7 +326,7 @@ errors = abs(predictions - test_labels)
 print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
 
 
-# In[ ]:
+# In[46]:
 
 
 mape = 100 * (errors / test_labels)
@@ -299,7 +335,7 @@ accuracy = 100 - np.mean(mape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[ ]:
+# In[47]:
 
 
 importances = list(rf.feature_importances_)
@@ -310,19 +346,37 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 # Print out the feature and importances 
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
+# New random forest with only the two most important variables
+rf_most_important = RandomForestRegressor(n_estimators= 1000, random_state=20)
+important_indices = [feature_list.index('Organizational performance'), feature_list.index('Pay or other compensation issues'),feature_list.index('Work-life balance and workload'), feature_list.index('Work-related stress'),  feature_list.index('A psychologically healthy workplace')]
+train_important = train_features[:, important_indices]
+test_important = test_features[:, important_indices]
+# Train the random forest
+rf_most_important.fit(train_important, train_labels)
+# Make predictions 
+predictions = rf_most_important.predict(test_important)
+errors = abs(predictions - test_labels)
+mape = np.mean(100 * (errors / test_labels))
+accuracy = 100 - mape
+print('Accuracy:', round(accuracy, 2), '%.')
 
-# In[ ]:
-
+importances_import = list(rf_most_important.feature_importances_)
+feature_list_import = ['Organizational performance', 'Pay or other compensation issues', 
+                    'Work-life balance and workload', 'Work-related stress', 
+                   'A psychologically healthy workplace']
 
 plt.style.use('fivethirtyeight')
-# list of x locations for plotting
-x_values = list(range(len(importances)))
-# Make a bar chart
-plt.bar(x_values, importances, orientation = 'vertical')
-# Tick labels for x axis
-plt.xticks(x_values, feature_list, rotation='vertical')
-# Axis labels and title
-plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
+x_values = list(range(len(feature_list_import)))
+plt.barh( x_values, importances_import, align = 'center')
+plt.yticks(x_values, labels = feature_list_import)
+
+
+
+
+plt.title('Variable Importances For Indigenous People')
+plt.ylabel('Variable')
+plt.xlabel('Importance')
+plt.show()
 
 
 # In[ ]:
@@ -331,7 +385,7 @@ plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importance
 ## Investigate the subgroup: Non Indigenous
 
 
-# In[ ]:
+# In[31]:
 
 
 features = pd.read_csv('nonindigenous2020.csv')
@@ -345,19 +399,19 @@ features = features[['Organizational performance', 'Pay or other compensation is
                    'Duty to accommodate','Yes']]
 
 
-# In[ ]:
+# In[32]:
 
 
 features = pd.get_dummies(features)
 
 
-# In[ ]:
+# In[33]:
 
 
 labels = np.array(features['Yes'])
 
 
-# In[ ]:
+# In[34]:
 
 
 features= features.drop('Yes', axis = 1)
@@ -368,7 +422,7 @@ features = np.array(features)
 train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
 
 
-# In[ ]:
+# In[35]:
 
 
 rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
@@ -376,7 +430,7 @@ rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
 rf.fit(train_features, train_labels)
 
 
-# In[ ]:
+# In[36]:
 
 
 predictions = rf.predict(test_features)
@@ -386,7 +440,7 @@ errors = abs(predictions - test_labels)
 print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
 
 
-# In[ ]:
+# In[37]:
 
 
 mape = 100 * (errors / test_labels)
@@ -395,7 +449,7 @@ accuracy = 100 - np.mean(mape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[ ]:
+# In[38]:
 
 
 importances = list(rf.feature_importances_)
@@ -406,28 +460,46 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 # Print out the feature and importances 
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
+# New random forest with only the two most important variables
+rf_most_important = RandomForestRegressor(n_estimators= 1000, random_state=20)
+important_indices = [feature_list.index('Organizational performance'), feature_list.index('Pay or other compensation issues'),feature_list.index('Discrimination'), feature_list.index('Work-related stress'),  feature_list.index('Duty to accommodate')]
+train_important = train_features[:, important_indices]
+test_important = test_features[:, important_indices]
+# Train the random forest
+rf_most_important.fit(train_important, train_labels)
+# Make predictions 
+predictions = rf_most_important.predict(test_important)
+errors = abs(predictions - test_labels)
+mape = np.mean(100 * (errors / test_labels))
+accuracy = 100 - mape
+print('Accuracy:', round(accuracy, 2), '%.')
 
-# In[ ]:
-
+importances_import = list(rf_most_important.feature_importances_)
+feature_list_import = ['Organizational performance', 'Pay or other compensation issues', 
+                    'Discrimination', 'Work-related stress', 
+                   'Duty to accommodate']
 
 plt.style.use('fivethirtyeight')
-# list of x locations for plotting
-x_values = list(range(len(importances)))
-# Make a bar chart
-plt.bar(x_values, importances, orientation = 'vertical')
-# Tick labels for x axis
-plt.xticks(x_values, feature_list, rotation='vertical')
-# Axis labels and title
-plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
+x_values = list(range(len(feature_list_import)))
+plt.barh( x_values, importances_import, align = 'center')
+plt.yticks(x_values, labels = feature_list_import)
+
+
+
+
+plt.title('Variable Importances For Non Indigenous People')
+plt.ylabel('Variable')
+plt.xlabel('Importance')
+plt.show()
 
 
 # In[ ]:
 
 
-## Investigate the subgroup: People with Diability
+## Investigate the subgroup: People with Disability
 
 
-# In[ ]:
+# In[49]:
 
 
 features = pd.read_csv('disabilityY2020.csv')
@@ -441,7 +513,7 @@ features = features[['Organizational performance', 'Pay or other compensation is
                    'Discrimination', 'Yes']]
 
 
-# In[ ]:
+# In[50]:
 
 
 features = pd.get_dummies(features)
@@ -452,7 +524,7 @@ feature_list = list(features.columns)
 features = np.array(features)
 
 
-# In[ ]:
+# In[51]:
 
 
 train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
@@ -461,7 +533,7 @@ rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
 rf.fit(train_features, train_labels)
 
 
-# In[ ]:
+# In[52]:
 
 
 predictions = rf.predict(test_features)
@@ -476,7 +548,7 @@ accuracy = 100 - np.mean(mape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[ ]:
+# In[53]:
 
 
 importances = list(rf.feature_importances_)
@@ -487,15 +559,37 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 # Print out the feature and importances 
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
+# New random forest with only the two most important variables
+rf_most_important = RandomForestRegressor(n_estimators= 1000, random_state=20)
+important_indices = [feature_list.index('Organizational performance'), feature_list.index('Pay or other compensation issues'),feature_list.index('Employee Engagement'), feature_list.index('Work-related stress'),  feature_list.index('Discrimination')]
+train_important = train_features[:, important_indices]
+test_important = test_features[:, important_indices]
+# Train the random forest
+rf_most_important.fit(train_important, train_labels)
+# Make predictions 
+predictions = rf_most_important.predict(test_important)
+errors = abs(predictions - test_labels)
+mape = np.mean(100 * (errors / test_labels))
+accuracy = 100 - mape
+print('Accuracy:', round(accuracy, 2), '%.')
+
+importances_import = list(rf_most_important.feature_importances_)
+feature_list_import = ['Organizational performance', 'Pay or other compensation issues', 
+                    'Employee Engagement', 'Work-related stress', 
+                   'Discrimination']
+
 plt.style.use('fivethirtyeight')
-# list of x locations for plotting
-x_values = list(range(len(importances)))
-# Make a bar chart
-plt.bar(x_values, importances, orientation = 'vertical')
-# Tick labels for x axis
-plt.xticks(x_values, feature_list, rotation='vertical')
-# Axis labels and title
-plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
+x_values = list(range(len(feature_list_import)))
+plt.barh( x_values, importances_import, align = 'center')
+plt.yticks(x_values, labels = feature_list_import)
+
+
+
+
+plt.title('Variable Importances For People With Disability')
+plt.ylabel('Variable')
+plt.xlabel('Importance')
+plt.show()
 
 
 # In[ ]:
@@ -504,7 +598,7 @@ plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importance
 ## Investigate the subgroup: Not a People with Diability
 
 
-# In[ ]:
+# In[78]:
 
 
 features = pd.read_csv('disabilityN2020.csv')
@@ -519,7 +613,7 @@ features = features[['Organizational performance', 'Work-life balance and worklo
                      'Yes']]
 
 
-# In[ ]:
+# In[79]:
 
 
 features = pd.get_dummies(features)
@@ -530,7 +624,7 @@ feature_list = list(features.columns)
 features = np.array(features)
 
 
-# In[ ]:
+# In[80]:
 
 
 train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
@@ -539,7 +633,7 @@ rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
 rf.fit(train_features, train_labels)
 
 
-# In[ ]:
+# In[81]:
 
 
 predictions = rf.predict(test_features)
@@ -554,7 +648,7 @@ accuracy = 100 - np.mean(mape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[ ]:
+# In[82]:
 
 
 importances = list(rf.feature_importances_)
@@ -565,15 +659,37 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 # Print out the feature and importances 
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
+# New random forest with only the two most important variables
+rf_most_important = RandomForestRegressor(n_estimators= 1000, random_state=20)
+important_indices = [feature_list.index('Organizational performance'), feature_list.index('Work-life balance and workload'),feature_list.index('Harassment'), feature_list.index('Work-related stress'),  feature_list.index('A safe and healthy workplace')]
+train_important = train_features[:, important_indices]
+test_important = test_features[:, important_indices]
+# Train the random forest
+rf_most_important.fit(train_important, train_labels)
+# Make predictions 
+predictions = rf_most_important.predict(test_important)
+errors = abs(predictions - test_labels)
+mape = np.mean(100 * (errors / test_labels))
+accuracy = 100 - mape
+print('Accuracy:', round(accuracy, 2), '%.')
+
+importances_import = list(rf_most_important.feature_importances_)
+feature_list_import = ['Organizational performance', 'Work-life balance and workload', 
+                   'Harassment', 'Work-related stress', 
+                   'A safe and healthy workplace']
+
 plt.style.use('fivethirtyeight')
-# list of x locations for plotting
-x_values = list(range(len(importances)))
-# Make a bar chart
-plt.bar(x_values, importances, orientation = 'vertical')
-# Tick labels for x axis
-plt.xticks(x_values, feature_list, rotation='vertical')
-# Axis labels and title
-plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
+x_values = list(range(len(feature_list_import)))
+plt.barh( x_values, importances_import, align = 'center')
+plt.yticks(x_values, labels = feature_list_import)
+
+
+
+
+plt.title('Variable Importances For People without Disability')
+plt.ylabel('Variable')
+plt.xlabel('Importance')
+plt.show()
 
 
 # In[ ]:
@@ -582,7 +698,7 @@ plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importance
 ## Investigate the subgroup: Female
 
 
-# In[ ]:
+# In[54]:
 
 
 # Read in data and keep needed columns
@@ -597,7 +713,7 @@ features = features.iloc[: , 1:]
 features = pd.get_dummies(features)
 
 
-# In[ ]:
+# In[55]:
 
 
 # label and feature
@@ -607,13 +723,13 @@ feature_list = list(features.columns)
 features = np.array(features)
 
 
-# In[ ]:
+# In[58]:
 
 
-train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 20
+train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
 
 
-# In[ ]:
+# In[59]:
 
 
 # train
@@ -621,7 +737,7 @@ rf = RandomForestRegressor(n_estimators = 1000, random_state = 20)
 rf.fit(train_features, train_labels)
 
 
-# In[ ]:
+# In[60]:
 
 
 # test
@@ -632,7 +748,7 @@ accuracy = 100 - np.mean(mape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[ ]:
+# In[61]:
 
 
 # variable importance
@@ -643,7 +759,7 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
 
-# In[ ]:
+# In[62]:
 
 
 # New random forest with only the two most important variables
@@ -661,7 +777,7 @@ accuracy = 100 - mape
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[ ]:
+# In[63]:
 
 
 #for plot
@@ -669,10 +785,10 @@ importances_import = list(rf_most_important.feature_importances_)
 feature_list_import = ['Organizational performance', 'Pay or other compensation issues', 'Employee Engagement', 'Work-related stress', 'Job fit and development']
 get_ipython().run_line_magic('matplotlib', 'inline')
 plt.style.use('fivethirtyeight')
-x_values = list(range(len(importances_import)))
-plt.bar(x_values, importances_import, orientation = 'vertical')
-plt.xticks(x_values, feature_list_import, rotation='vertical')
-plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
+x_values = list(range(len(feature_list_import)))
+plt.barh( x_values, importances_import, align = 'center')
+plt.yticks(x_values, labels = feature_list_import)
+plt.ylabel('Variable'); plt.xlabel('Importance'); plt.title('Variable Importances For Female');
 
 
 # In[ ]:
@@ -681,7 +797,7 @@ plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importance
 ## Investigate the subgroup: Male
 
 
-# In[ ]:
+# In[64]:
 
 
 # Read in data and keep needed columns
@@ -694,14 +810,14 @@ features = features.drop(['anscount'], axis = 1)
 features = features.iloc[: , 1:]
 
 
-# In[ ]:
+# In[65]:
 
 
 # create one hot vector
 features = pd.get_dummies(features)
 
 
-# In[ ]:
+# In[66]:
 
 
 # label and feature
@@ -711,14 +827,14 @@ feature_list = list(features.columns)
 features = np.array(features)
 
 
-# In[ ]:
+# In[67]:
 
 
 # Split the data into training and testing sets
 train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 20)
 
 
-# In[ ]:
+# In[68]:
 
 
 # train
@@ -726,7 +842,7 @@ rf = RandomForestRegressor(n_estimators = 1000, random_state = 20)
 rf.fit(train_features, train_labels)
 
 
-# In[ ]:
+# In[69]:
 
 
 # test
@@ -737,7 +853,7 @@ accuracy = 100 - np.mean(mape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[ ]:
+# In[70]:
 
 
 # variable importance
@@ -747,7 +863,7 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances]
 
 
-# In[ ]:
+# In[71]:
 
 
 # New random forest with only the two most important variables
@@ -765,7 +881,7 @@ accuracy = 100 - mape
 print('Accuracy:', round(accuracy, 2), '%.')
 
 
-# In[ ]:
+# In[72]:
 
 
 # plot
@@ -773,8 +889,14 @@ importances_import = list(rf_most_important.feature_importances_)
 feature_list_import = ['Employee Engagement', 'Work-related stress', 'Use of official languages', 'Organizational performance', 'Job fit and development']
 get_ipython().run_line_magic('matplotlib', 'inline')
 plt.style.use('fivethirtyeight')
-x_values = list(range(len(importances_import)))
-plt.bar(x_values, importances_import, orientation = 'vertical')
-plt.xticks(x_values, feature_list_import, rotation='vertical')
-plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
+x_values = list(range(len(feature_list_import)))
+plt.barh( x_values, importances_import, align = 'center')
+plt.yticks(x_values, labels = feature_list_import)
+plt.ylabel('Variable'); plt.xlabel('Importance'); plt.title('Variable Importances For Male');
+
+
+# In[ ]:
+
+
+
 
